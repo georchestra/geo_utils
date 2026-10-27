@@ -1,4 +1,4 @@
-## [GeoNetwork: `GN_API`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L18)
+## [GeoNetwork: `GN_API`](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/gn_api.py#L18)
 
 Create the client directly to configure GeoNetwork-specific options:
 
@@ -92,7 +92,7 @@ geOr_api.gn.purge_search_bucket("geoutilsbucket")
 ```
 
 
-### [Catalog and metadata](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L40)
+### [Catalog and metadata](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/gn_api.py#L40)
 
 | Method | Purpose | Result notes |
 | --- | --- | --- |
@@ -105,7 +105,7 @@ geOr_api.gn.purge_search_bucket("geoutilsbucket")
 
 
 
-### [Thesaurus](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L244)
+### [Thesaurus](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/gn_api.py#L244)
 
 | Method | Purpose |
 | --- | --- |
@@ -161,7 +161,7 @@ result = gn.add_thesaurus_keyword(
 print(result)
 ```
 
-### [Harvests](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L369)
+### [Harvests](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/gn_api.py#L369)
 
 | Method | Purpose | Result notes |
 | --- | --- | --- |
@@ -170,7 +170,7 @@ print(result)
 | `delete_harvest(id)` | Remove a harvest configuration | Parsed JSON response |
 
 
-### [Search selections and batch editing](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L440)
+### [Search selections and batch editing](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/gn_api.py#L440)
 
 | Method | Purpose |
 | --- | --- |

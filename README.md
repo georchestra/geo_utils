@@ -1,8 +1,8 @@
-# geo-utils
+# geo_utils
 
 This repository contains many tips/scripts/librairies in order to simplify administration/automation of geOrchestra plateform.
 
-If you have any ideas to develop/which you could create a new issue here : https://github.com/georchestra/geo-utils/issues
+If you have any ideas to develop/which you could create a new issue here : https://github.com/georchestra/geo_utils/issues
 
 ## Python module
 
@@ -10,7 +10,7 @@ There is also a python module in order to script actions in geOrchestra platefor
 
 To install it : 
 ```
-pip install git+https://github.com/georchestra/geo-utils/ 
+pip install git+https://github.com/georchestra/geo_utils/ 
 ```
 (you might need --break-system-packages option)
 

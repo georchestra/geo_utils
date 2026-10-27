@@ -1,8 +1,8 @@
 site_name: geOrchestra Python library
 site_description: Python clients and utilities for geOrchestra administration and metadata workflows
-site_url: https://docs.georchestra.org/geo-utils/en/latest/
-repo_url: https://github.com/georchestra/geo-utils
-repo_name: georchestra/geo-utils
+site_url: https://docs.georchestra.org/geo_utils/en/latest/
+repo_url: https://github.com/georchestra/geo_utils
+repo_name: georchestra/geo_utils
 edit_uri: edit/main/docs/
 docs_dir: docs
 

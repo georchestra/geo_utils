@@ -1,4 +1,4 @@
-## [GeoNetwork : `GN_API`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L18)
+## [GeoNetwork : `GN_API`](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/gn_api.py#L18)
 
 Créez directement le client pour configurer les options propres à GeoNetwork :
 
@@ -91,7 +91,7 @@ geOr_api.gn.batch_edit_search_and_replace(
 geOr_api.gn.purge_search_bucket("geoutilsbucket")
 ```
 
-### [Catalogue et métadonnées](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L40)
+### [Catalogue et métadonnées](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/gn_api.py#L40)
 
 | Méthode | Description | Remarques sur le résultat |
 | --- | --- | --- |
@@ -102,7 +102,7 @@ geOr_api.gn.purge_search_bucket("geoutilsbucket")
 | `upload_metadata(metadata, groupid="100", uuidprocessing="GENERATEUUID", publish=False)` | Téléverse un objet fichier de métadonnées ; `uuidprocessing` accepte les valeurs GeoNetwork `NOTHING`, `OVERWRITE` et `GENERATEUUID` | JSON analysé en cas de succès ; `False` en cas d’erreur gérée |
 | `get_record_privileges(uuid)` | Récupère le groupe propriétaire et la visibilité publique | Dictionnaire en cas de succès ; sinon `None` |
 
-### [Thésaurus](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L244)
+### [Thésaurus](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/gn_api.py#L244)
 
 | Méthode | Description |
 | --- | --- |
@@ -158,7 +158,7 @@ result = gn.add_thesaurus_keyword(
 print(result)
 ```
 
-### [Moissonnage](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L369)
+### [Moissonnage](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/gn_api.py#L369)
 
 | Méthode | Description | Remarques sur le résultat |
 | --- | --- | --- |
@@ -166,7 +166,7 @@ print(result)
 | `make_harvest_local(uuid)` | Associe une récolte au nœud GeoNetwork local | `"Okay"` ou `False` ; le délai d’attente peut atteindre une heure |
 | `delete_harvest(id)` | Supprime une configuration de récolte | Réponse JSON analysée |
 
-### [Sélections de recherche et modifications par lot](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L440)
+### [Sélections de recherche et modifications par lot](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/gn_api.py#L440)
 
 | Méthode | Description |
 | --- | --- |

@@ -2,7 +2,7 @@
 
 `geOrchestra` est un package Python permettant d’interagir avec les services geOrchestra par script et d’automatiser de nombreuses tâches d’administration de la plateforme de données. Il prend en charge les automatisations GeoNetwork, Console et GeoServer.
 
-Ce package fait partie de [geo-utils](https://github.com/georchestra/geo-utils), un dépôt d’utilitaires et de scripts d’administration geOrchestra. Ce guide porte uniquement sur la bibliothèque Python.
+Ce package fait partie de [geo_utils](https://github.com/georchestra/geo_utils), un dépôt d’utilitaires et de scripts d’administration geOrchestra. Ce guide porte uniquement sur la bibliothèque Python.
 
 ## Documentation de l’API
 
@@ -21,7 +21,7 @@ Ce package fait partie de [geo-utils](https://github.com/georchestra/geo-utils),
 Installez le package directement depuis GitHub :
 
 ```bash
-python3 -m pip install "git+https://github.com/georchestra/geo-utils.git"
+python3 -m pip install "git+https://github.com/georchestra/geo_utils.git"
 ```
 
 Les métadonnées du package déclarent `requests`, `python-dotenv` et `geoservercloud` comme dépendances. Si vous installez le package dans un environnement Python système géré de l’extérieur, utilisez un environnement virtuel :
@@ -29,12 +29,12 @@ Les métadonnées du package déclarent `requests`, `python-dotenv` et `geoserve
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-python3 -m pip install "git+https://github.com/georchestra/geo-utils.git"
+python3 -m pip install "git+https://github.com/georchestra/geo_utils.git"
 ```
 
 ## Exemples
 
-Consultez le [guide des exemples](samples.md) pour découvrir les scripts exécutables du [répertoire samples](https://github.com/georchestra/geo-utils/tree/main/samples).
+Consultez le [guide des exemples](samples.md) pour découvrir les scripts exécutables du [répertoire samples](https://github.com/georchestra/geo_utils/tree/main/samples).
 
 Pour commencer :
 

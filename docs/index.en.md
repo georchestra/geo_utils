@@ -3,7 +3,7 @@
 `geOrchestra` is a Python package for scripting against geOrchestra services. It automates many actions needed for data platform administration.
 It supports GeoNetwork, Console, and GeoServer automations.
 
-The package is part of [geo-utils](https://github.com/georchestra/geo-utils), a repository of geOrchestra utilities and administration scripts. This guide covers the Python library only.
+The package is part of [geo_utils](https://github.com/georchestra/geo_utils), a repository of geOrchestra utilities and administration scripts. This guide covers the Python library only.
 
 ## API documentation
 
@@ -22,7 +22,7 @@ The package is part of [geo-utils](https://github.com/georchestra/geo-utils), a 
 Install the package directly from GitHub:
 
 ```bash
-python3 -m pip install "git+https://github.com/georchestra/geo-utils.git"
+python3 -m pip install "git+https://github.com/georchestra/geo_utils.git"
 ```
 
 The package metadata declares `requests`, `python-dotenv`, and `geoservercloud` as dependencies. If you are installing into an externally managed system Python, use a virtual environment as followed :
@@ -30,11 +30,11 @@ The package metadata declares `requests`, `python-dotenv`, and `geoservercloud` 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-python3 -m pip install "git+https://github.com/georchestra/geo-utils.git"
+python3 -m pip install "git+https://github.com/georchestra/geo_utils.git"
 ```
 ## Samples
 
-See the [samples guide](samples.md) for runnable scripts in the [samples directory](https://github.com/georchestra/geo-utils/tree/main/samples).
+See the [samples guide](samples.md) for runnable scripts in the [samples directory](https://github.com/georchestra/geo_utils/tree/main/samples).
 
 Start to play :
 ```python

@@ -1,4 +1,4 @@
-## [Console : `Console_api`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/console/console.py#L4)
+## [Console : `Console_api`](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/console/console.py#L4)
 
 L’attribut `console` du client principal est une instance de `Console_api`. Il envoie des requêtes à `/console/private/...` avec l’authentification HTTP Basic.
 
@@ -25,7 +25,7 @@ print(console.createneworgs(name="TESTAPI", shortName="testapi", orgType="Other"
 print(console.delorgs(id="testapi"))
 ```
 
-### [Utilisateurs](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/console/console.py#L38)
+### [Utilisateurs](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/console/console.py#L38)
 
 | Méthode | Description | Remarques sur le résultat |
 | --- | --- | --- |
@@ -34,7 +34,7 @@ print(console.delorgs(id="testapi"))
 | `updateuserdetails(uid, json)` | Modifie un utilisateur ; `json` est le corps de requête encodé en JSON | Texte de la réponse si HTTP 200 ; sinon `None`. |
 | `deluser(id)` | Supprime un utilisateur | Texte de la réponse si HTTP 200 ; sinon une chaîne d’erreur. |
 
-### [Organisations](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/console/console.py#L102)
+### [Organisations](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/console/console.py#L102)
 
 | Méthode | Description | Remarques sur le résultat |
 | --- | --- | --- |
@@ -42,7 +42,7 @@ print(console.delorgs(id="testapi"))
 | `createneworgs(name, shortName, orgType, address="", description="", note="", mail="", url="", b64logo="")` | Crée une organisation | `orgType` doit être un type pris en charge par Console, par exemple `Association`, `Company`, `NGO`, `Individual` ou `Other`. Renvoie le texte de la réponse si HTTP 200 ; sinon une chaîne d’erreur. |
 | `delorgs(id)` | Supprime une organisation | Texte de la réponse si HTTP 200 ; sinon une chaîne d’erreur. |
 
-### [Rôles](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/console/console.py#L165)
+### [Rôles](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/console/console.py#L165)
 
 | Méthode | Description | Remarques sur le résultat |
 | --- | --- | --- |

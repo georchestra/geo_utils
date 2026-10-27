@@ -1,4 +1,4 @@
-## [Classe geOrchestra](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/geOrchestra.py#L9)
+## [Classe geOrchestra](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/geOrchestra.py#L9)
 
 ```python
 from geOrchestra import geOrchestra
