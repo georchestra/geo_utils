@@ -2,13 +2,10 @@ import json
 import requests
 import re
 import urllib3
-import sys
 import xmltodict
 import time
-
-if __name__ == "__main__":
-    # adding local file
-    from meta_manipulation import Meta_manipulation
+import uuid
+import xml.etree.ElementTree as ET
 
 
 # disable https checks (for testing or development server)
@@ -76,6 +73,16 @@ class GN_API:
         else:
             print(response.text)
             print("Unable to find the XSRF token")
+
+    def _debug_request(self, req):
+        print(
+            "{}\n{}\r\n{}\r\n\r\n{}".format(
+                "-----------START-----------",
+                req.method + " " + req.url,
+                "\r\n".join("{}: {}".format(k, v) for k, v in req.headers.items()),
+                req.body,
+            )
+        )
 
     def get_all_catalog(self, steps=100, portal=None):
         # using CSW url /geonetwork/srv/fre/csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&maxRecords=10&startPosition=1
@@ -231,11 +238,23 @@ class GN_API:
             print(response.text)
             return False
 
-    def get_thesaurus_dict(self, thesaurus_key=None):
+    def list_thesaurus(self, thesaurus_key=None):
+        """List thesaurus, or return the entry matching a key.
+
+        Returns ``None`` if the request fails or the key is not found.
+        """
         url = self.server + self.prefix_gn_url + "/srv/fre/thesaurus?_content_type=json"
         # no needed to authenticate this is public
         response = self.session.get(url, verify=self.verifytls)
+        if response.status_code != 200:
+            return None
 
+        try:
+            thesaurus = response.json()[0]
+        except (ValueError, IndexError, TypeError):
+            return None
+        if not isinstance(thesaurus, list):
+            return None
         if thesaurus_key is None:
             return json.loads(response.text)[0]
         else:
@@ -243,49 +262,156 @@ class GN_API:
                 if th["key"] == thesaurus_key:
                     return th
 
-    def searchin_thesaurus_dict(self, keyword: str = "", thesaurus_key=False):
-        url = f"{self.server}{self.prefix_gn_url}/srv/api/registries/vocabularies/search?q={keyword}&lang=fre&rows=10&start=0"
+    # thesaurus_key sould be 'key' from list_thesaurus
+    def get_thesaurus(self, thesaurus_key=None):
+        """Return a thesaurus as RDF/XML, or None when the request fails."""
+        if thesaurus_key is None:
+            return {}
+
+        url = (
+            self.server
+            + self.prefix_gn_url
+            + "/srv/api/registries/vocabularies/"
+            + thesaurus_key
+        )
+
+        # no needed to authenticate this is public
+        response = self.session.get(
+            url,
+            headers={"Accept": "application/xml, text/xml"},
+            verify=self.verifytls,
+        )
+        if response.status_code == 200:
+            return response.text
+        return None
+
+    def searchin_thesaurus_dict(self, keyword: str = "", thesaurus_key=False, search_lang="fre"):
+        """Search vocabulary terms, optionally limited to thesaurus keys.
+
+        A string selects one thesaurus; a list or dict selects several. The
+        default boolean value searches all thesaurus. Returns parsed JSON, or
+        ``None`` if the search or thesaurus listing fails.
+        """
+        url = (
+            f"{self.server}{self.prefix_gn_url}"
+            "/srv/api/registries/vocabularies/search"
+        )
+        params = [
+            ("q", keyword),
+            ("lang", search_lang),
+            ("rows", 10),
+            ("start", 0),
+        ]
 
         if isinstance(thesaurus_key, str):
-            url += f"&thesaurus={thesaurus_key}"
-        if isinstance(thesaurus_key, list) or isinstance(thesaurus_key, dict):
-            for key in thesaurus_key:
-                url += f"&thesaurus={key}"
-        if isinstance(thesaurus_key, bool):
+            params.append(("thesaurus", thesaurus_key))
+        elif isinstance(thesaurus_key, (list, dict)):
+            params.extend(("thesaurus", key) for key in thesaurus_key)
+        elif isinstance(thesaurus_key, bool):
             # select all thesaurus
-            for th in self.get_thesaurus_dict():
-                url += f"&thesaurus={th['key']}"
+            thesaurus = self.list_thesaurus()
+            if thesaurus is None:
+                return None
+            params.extend(("thesaurus", th["key"]) for th in thesaurus)
         # no needed to authenticate this is public
         headers = {"Accept": "application/json", "X-XSRF-TOKEN": self.xsrf_token}
-        response = self.session.get(url, headers=headers, verify=self.verifytls)
+        response = self.session.get(
+            url, params=params, headers=headers, verify=self.verifytls
+        )
+        if response.status_code != 200:
+            return None
 
-        return json.loads(response.text)
+        try:
+            return response.json()
+        except ValueError:
+            return None
 
-    # not working yet
-    def add_thesaurus_dict(self, filename):
-        headers = {
-            "Accept": "application/json",
-            "X-XSRF-TOKEN": self.xsrf_token,
-            "Origin": "http://" + self.server,
-            "Referer": "http://"
-            + self.server
+    def add_thesaurus_keyword(
+        self,
+        thesaurus_ref,
+        ref_type,
+        namespace,
+        label,
+        definition,
+        keyword_uri=None,
+        language="fre",
+    ):
+        """Add a localized keyword to an existing thesaurus.
+
+        ``keyword_uri`` defaults to a new UUID-based URI in ``namespace``.
+        Returns ``(True, response_text)`` on HTTP 200/201, otherwise
+        ``(False, response_text)``.
+        """
+        if not re.fullmatch(r"[a-z]{3}", language):
+            raise ValueError("language must be a three-letter lowercase code")
+
+        namespace = namespace.rstrip("#")
+        keyword_uri = keyword_uri or f"{namespace}#{uuid.uuid4()}"
+        request_xml = ET.Element("request")
+        for field, value in (
+            ("newid", keyword_uri),
+            ("refType", ref_type),
+            ("namespace", namespace),
+            ("ref", thesaurus_ref),
+            ("oldid", keyword_uri),
+            (f"loc_{language}_label", label),
+            (f"loc_{language}_definition", definition),
+        ):
+            ET.SubElement(request_xml, field).text = value
+
+        url = (
+            self.server
             + self.prefix_gn_url
-            + "/srv/fre/admin.console",
+            + "/srv/fre/thesaurus.keyword.add"
+        )
+        headers = {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/xml",
+            "X-XSRF-TOKEN": self.xsrf_token,
+            "Origin": self.server,
+            "Referer": self.server + "/",
+        }
+        response = self.session.post(
+            url,
+            params={"_content_type": "json"},
+            data=ET.tostring(request_xml, encoding="unicode"),
+            auth=(self.username, self.password),
+            headers=headers,
+            verify=self.verifytls,
+        )
+
+        if response.status_code in (200, 201):
+            return True, response.text
+
+        print(
+            f"Unable to add thesaurus keyword: {response.status_code} "
+            f"{response.reason}"
+        )
+        print(
+            "Response body:",
+            repr(response.text) if response.text else "<empty>",
+        )
+        return False, response.text
+
+    def create_thesaurus_dict(self, info_thesaurus_json, rdf_content):
+        """Upload a thesaurus and return the server response, or False on failure."""
+        headers = {
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "X-XSRF-TOKEN": self.xsrf_token,
+            "Origin": self.server,
+            "Referer": self.server + "/",
+            "X-Requested-With": "XMLHttpRequest",
         }  #
 
         # Set the parameters
         params = {
-            "_csrf": self.xsrf_token,
             "url": "",
             "registryUrl": "",
             "registryType": "",
-            "type": "local",
-            "dir": "theme",
+            "type": info_thesaurus_json['type'],
+            "dir": info_thesaurus_json['dname'],
         }  #  'stylesheet': '_none_',
 
-        cookies = {
-            "XSRF-TOKEN": self.xsrf_token,
-        }
         response = self.session.post(
             self.server
             + self.prefix_gn_url
@@ -293,41 +419,79 @@ class GN_API:
             + self.xsrf_token,
             auth=(self.username, self.password),
             headers=headers,
-            cookies=cookies,
             data=params,
             verify=self.verifytls,
             files=[
-                ("file", (filename, open(filename, "rb").read(), "application/rdf+xml"))
+                ("file", (info_thesaurus_json['filename'], rdf_content, "application/rdf+xml"))
             ],
         )
 
-        req = response.request
+        if response.status_code in (200, 201):
+            print("uploaded new thesaurus")
+            return True, response.text
+
         print(
-            "{}\n{}\r\n{}\r\n\r\n{}".format(
-                "-----------START-----------",
-                req.method + " " + req.url,
-                "\r\n".join("{}: {}".format(k, v) for k, v in req.headers.items()),
-                req.body,
-            )
+            f"Unable to upload thesaurus: {response.status_code} "
+            f"{response.reason}"
         )
-        print(response.request)
-        print("uploaded new thesaurus")
-        print(response)
-        print(response.text)
+        print(
+            "Response body:",
+            repr(response.text) if response.text else "<empty>",
+        )
+        return False, response.text
 
-    # format of name [internal|external].[theme|place|...].[name]
-    def delete_thesaurus_dict(self, name):
+    def create_thesaurus(self, thesaurus_info):
+        """Create thesaurus metadata from a GeoNetwork ThesaurusInfo payload.
+
+        Returns ``(True, response_text)`` for HTTP 200/201, otherwise
+        ``(False, response_text)``.
+        """
+        url = (
+            self.server
+            + self.prefix_gn_url
+            + "/srv/api/registries/vocabularies"
+        )
         headers = {
-            "Accept": "application/json",
+            "Accept": "application/json, text/plain, */*",
             "X-XSRF-TOKEN": self.xsrf_token,
+            "Origin": self.server,
+            "Referer": self.server + "/",
         }
+        response = self.session.put(
+            url,
+            json=thesaurus_info,
+            auth=(self.username, self.password),
+            headers=headers,
+            verify=self.verifytls,
+        )
 
+        if response.status_code in (200, 201):
+            return True, response.text
+
+        print(
+            f"Unable to create thesaurus: {response.status_code} "
+            f"{response.reason}"
+        )
+        print(
+            "Response body:",
+            repr(response.text) if response.text else "<empty>",
+        )
+        return False, response.text
+
+    def delete_thesaurus(self, thesaurus_key):
+        """Delete a thesaurus by key; return (success, response_text)."""
         url = (
             self.server
             + self.prefix_gn_url
             + "/srv/api/registries/vocabularies/"
-            + name
+            + thesaurus_key
         )
+        headers = {
+            "Accept": "application/json, text/plain, */*",
+            "X-XSRF-TOKEN": self.xsrf_token,
+            "Origin": self.server,
+            "Referer": self.server + "/",
+        }
         response = self.session.delete(
             url,
             auth=(self.username, self.password),
@@ -335,10 +499,18 @@ class GN_API:
             verify=self.verifytls,
         )
 
-        if response.status_code == 200:
-            return response.text
-        else:
-            return "Error while deleting thesaurus reason " + response.text
+        if response.status_code in (200, 204):
+            return True, response.text
+
+        print(
+            f"Unable to delete thesaurus: {response.status_code} "
+            f"{response.reason}"
+        )
+        print(
+            "Response body:",
+            repr(response.text) if response.text else "<empty>",
+        )
+        return False, response.text
 
     def get_harvests(self):
         headers = {"Accept": "application/json", "X-XSRF-TOKEN": self.xsrf_token}
@@ -670,56 +842,3 @@ class GN_API:
         self.session.close()
 
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("You should specify the xml file to upload like that :")
-        print(" python3 ask_gn_api.py sample_meta.xml")
-        exit()
-    file_to_update = sys.argv[1]
-
-    print("Will upload the file " + file_to_update)
-
-    # Set up your username and password:
-    username = "testadmin"
-    # username = "admin"
-    password = "testadmin"
-    # password = "admin"
-
-    # Set up your server and the authentication URL:
-    server = "https://georchestra-127-0-0-1.nip.io"  # test with geOrchestra
-    # server = "http://localhost" # test with geonetwork
-    final_server = server
-
-    api_obj = GN_API(
-        server=server, username=username, password=password, verifytls=False
-    )
-
-    print(api_obj.get_gnversion())
-    api_obj.generate_xsfr()
-
-    # add exemple thesaurus to the GN
-    api_obj.add_thesaurus_dict("exemple.rdf")
-
-    # read / add thesaurus to sample metadata and upload metadata to the remote GN
-    f = open(file_to_update)
-    meta_to_upload = f.read()
-    f.close()
-    meta_to_upload_updated = Meta_manipulation.add_thesaurus(
-        meta_to_upload,
-        title="Category",
-        server=final_server,
-        thesaurus_value="test1",
-        local_thesaurus_name="exemple",
-    )
-
-    api_obj.upload_metadata(
-        metadata=meta_to_upload_updated, uuidprocessing="OVERWRITE", publish=True
-    )
-
-    list_thesaurus = api_obj.get_thesaurus_dict()
-
-    for thesauru in list_thesaurus[0]:
-        print("Key name : " + thesauru["key"])
-    print(api_obj.delete_thesaurus_dict("external.theme.eu.europa.language"))
-
-    api_obj.closesession()
