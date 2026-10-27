@@ -1,6 +1,6 @@
 
 
-## GeoServer
+## [GeoServer](https://github.com/camptocamp/python-geoservercloud)
 
 The top-level client's `geoserver` attribute is a `GeoServerCloud` instance from the [GeoServer Cloud Python library](https://github.com/camptocamp/python-geoservercloud). The wrapper builds it with the instance URL's `/geoserver/` endpoint and the supplied credentials.
 

@@ -34,6 +34,8 @@ python3 -m pip install "git+https://github.com/georchestra/geo-utils.git"
 
 ## Exemples
 
+Consultez le [guide des exemples](samples.md) pour découvrir les scripts exécutables du [répertoire samples](https://github.com/georchestra/geo-utils/tree/main/samples).
+
 Pour commencer :
 
 ```python

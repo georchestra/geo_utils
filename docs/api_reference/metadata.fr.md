@@ -1,4 +1,4 @@
-## Outils de métadonnées
+## [Outils de métadonnées](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/__init__.py#L1)
 
 `Metadata`, `ThesaurusKeyword` et `Meta_manipulation` sont exportés par `geOrchestra.meta_apis`.
 
@@ -10,8 +10,10 @@ Ajouter à un fichier ISO 19115-3 un mot-clé de thésaurus trouvé dans GeoNetw
 from geOrchestra.meta_apis import GN_API, Metadata, ThesaurusKeyword
 
 gn = GN_API("http://localhost:8080", "testadmin", "testadmin")
-thesaurus = gn.get_thesaurus_dict("local.theme.geographie-ofb")
-keyword = gn.searchin_thesaurus_dict(keyword="Mayotte")[0]
+thesaurus = gn.list_thesaurus("local.theme.geographie-ofb")
+keyword = gn.searchin_thesaurus_dict(
+    keyword="Mayotte", thesaurus_key="local.theme.geographie-ofb"
+)[0]
 
 meta = Metadata()
 meta.load_from_file("./sample_meta2.xml")
@@ -30,7 +32,7 @@ meta.update_value_xpath(
 meta.save_into_file("./sample_meta3.xml")
 ```
 
-### `Metadata`
+### [`Metadata`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/metadata.py#L83)
 
 `Metadata(xml_string="")` analyse une chaîne XML de métadonnées ISO et détecte ses espaces de noms XML. En cas d’échec de l’analyse, `meta` est défini sur `None`.
 
@@ -45,7 +47,7 @@ meta.save_into_file("./sample_meta3.xml")
 
 `apply_xslt_tranformation`, `search_and_replace` et `append_value_xpath` sont des méthodes provisoires qui ne font actuellement rien.
 
-### `ThesaurusKeyword`
+### [`ThesaurusKeyword`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/metadata.py#L5)
 
 | Membre | Description |
 | --- | --- |
@@ -55,7 +57,7 @@ meta.save_into_file("./sample_meta3.xml")
 | `to_xml()` | Crée un fragment XML de mots-clés descriptifs ISO 19115-3. |
 | `tostring()` | Renvoie les valeurs de l’objet sous forme de chaîne séparée par des virgules. |
 
-### `Meta_manipulation`
+### [`Meta_manipulation`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/meta_manipulation.py#L5)
 
 | Méthode | Description | Remarques sur le résultat |
 | --- | --- | --- |

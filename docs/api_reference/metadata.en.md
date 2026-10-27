@@ -1,5 +1,5 @@
 
-## Metadata helpers
+## [Metadata helpers](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/__init__.py#L1)
 
 `Metadata`, `ThesaurusKeyword`, and `Meta_manipulation` are exported by `geOrchestra.meta_apis`.
 
@@ -11,8 +11,10 @@ Add a thesaurus keyword found in GeoNetwork to an ISO 19115-3 file and change it
 from geOrchestra.meta_apis import GN_API, Metadata, ThesaurusKeyword
 
 gn = GN_API("http://localhost:8080", "testadmin", "testadmin")
-thesaurus = gn.get_thesaurus_dict("local.theme.geographie-ofb")
-keyword = gn.searchin_thesaurus_dict(keyword="Mayotte")[0]
+thesaurus = gn.list_thesaurus("local.theme.geographie-ofb")
+keyword = gn.searchin_thesaurus_dict(
+    keyword="Mayotte", thesaurus_key="local.theme.geographie-ofb"
+)[0]
 
 meta = Metadata()
 meta.load_from_file("./sample_meta2.xml")
@@ -31,7 +33,7 @@ meta.update_value_xpath(
 meta.save_into_file("./sample_meta3.xml")
 ```
 
-### `Metadata`
+### [`Metadata`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/metadata.py#L83)
 
 `Metadata(xml_string="")` parses an ISO metadata XML string and discovers its XML namespaces. If parsing fails, `meta` is set to `None`.
 
@@ -46,7 +48,7 @@ meta.save_into_file("./sample_meta3.xml")
 
 `apply_xslt_tranformation`, `search_and_replace`, and `append_value_xpath` are placeholders and currently do nothing.
 
-### `ThesaurusKeyword`
+### [`ThesaurusKeyword`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/metadata.py#L5)
 
 | Member | Purpose |
 | --- | --- |
@@ -56,7 +58,7 @@ meta.save_into_file("./sample_meta3.xml")
 | `to_xml()` | Create an ISO 19115-3 descriptive-keyword XML fragment. |
 | `tostring()` | Return the helper's values as a comma-separated string. |
 
-### `Meta_manipulation`
+### [`Meta_manipulation`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/meta_manipulation.py#L5)
 
 | Method | Purpose | Result notes |
 | --- | --- | --- |

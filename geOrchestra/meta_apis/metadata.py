@@ -180,26 +180,3 @@ class Metadata:
                 print("Okay good")
 
 
-if __name__ == "__main__":
-    from gn_api import GN_API
-
-    gn = GN_API(
-        server="http://localhost:8080", username="testadmin", password="testadmin"
-    )
-    geo = gn.get_thesaurus_dict("local.theme.geographie-ofb")
-    mayotte = gn.searchin_thesaurus_dict(keyword="Mayotte")[0]
-
-    meta = Metadata()
-    meta.load_from_file("./sample_meta2.xml")
-    t = ThesaurusKeyword()
-    t.load_from_json_get_thesaurus_dict(geo)
-    t.load_from_json_search_thesaurus_dict(mayotte)
-
-    meta.add_thesaurus_to_metadata(t)
-    # meta.update_value_xpath(xpath="/mdb:MD_Metadata/mdb:identificationInfo/mri:MD_DataIdentification/mri:citation/cit:CI_Citation/cit:identifier/mcc:MD_Identifier/mcc:code",
-    #                         value='<gco:CharacterString xmlns:gco="http://standards.iso.org/iso/19115/-3/gco/1.0" >mdlkfsdmflkdsftest</gco:CharacterString>')
-    meta.update_value_xpath(
-        xpath="/mdb:MD_Metadata/mdb:identificationInfo/mri:MD_DataIdentification/mri:citation/cit:CI_Citation/cit:identifier/mcc:MD_Identifier/mcc:code/gco:CharacterString",
-        value="testnewidentifier",
-    )
-    meta.save_into_file("./sample_meta3.xml")

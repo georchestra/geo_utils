@@ -1,4 +1,4 @@
-## [GeoNetwork: `GN_API`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py)
+## [GeoNetwork: `GN_API`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L18)
 
 Create the client directly to configure GeoNetwork-specific options:
 
@@ -45,7 +45,7 @@ metadata = Meta_manipulation.add_thesaurus(
 
 gn.upload_metadata(metadata=metadata, uuidprocessing="OVERWRITE", publish=True)
 
-for thesaurus in gn.get_thesaurus_dict():
+for thesaurus in gn.list_thesaurus():
     print("Key name:", thesaurus["key"])
 
 gn.closesession()
@@ -92,7 +92,7 @@ geOr_api.gn.purge_search_bucket("geoutilsbucket")
 ```
 
 
-### Catalog and metadata
+### [Catalog and metadata](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L40)
 
 | Method | Purpose | Result notes |
 | --- | --- | --- |
@@ -105,16 +105,63 @@ geOr_api.gn.purge_search_bucket("geoutilsbucket")
 
 
 
-### Thesauri
+### [Thesaurus](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L244)
 
 | Method | Purpose |
 | --- | --- |
-| `get_thesaurus_dict(thesaurus_key=None)` | Retrieve thesaurus information, optionally for one key |
-| `searchin_thesaurus_dict(keyword="", thesaurus_key=False)` | Search vocabulary terms, optionally restricted to thesaurus keys |
-| `add_thesaurus_dict(filename)` | Upload a thesaurus file; implementation is experimental and prints request details |
-| `delete_thesaurus_dict(name)` | Delete a thesaurus by its name/key |
+| `list_thesaurus(thesaurus_key=None)` | List thesauri, or return one matching thesaurus by key; returns `None` if the request fails or the key is not found |
+| `get_thesaurus(thesaurus_key)` | Retrieve one thesaurus as RDF/XML text; returns `None` if the request fails |
+| `searchin_thesaurus_dict(keyword="", thesaurus_key=False)` | Search vocabulary terms across all thesauri or restrict the search to one or more keys; returns parsed JSON on HTTP 200, otherwise `None` |
+| `add_thesaurus_keyword(thesaurus_ref, ref_type, namespace, label, definition, keyword_uri=None, language="fre")` | Add a localized keyword to an existing thesaurus; generates a UUID-based concept URI if omitted and returns `(True, response_text)` on HTTP 200/201 |
+| `create_thesaurus_dict(info_thesaurus_json, rdf_content)` | Upload an RDF thesaurus. `info_thesaurus_json` requires `filename`, `type`, and `dname`; returns `(True, response_text)` on HTTP 200/201 or `(False, response_text)` otherwise. |
+| `create_thesaurus(thesaurus_info)` | Create thesaurus metadata from a JSON payload using GeoNetwork's PUT endpoint; returns `(True, response_text)` on HTTP 200/201 or `(False, response_text)` otherwise. |
+| `delete_thesaurus(thesaurus_key)` | Delete a thesaurus by key; returns `(True, response_text)` on HTTP 200/204 or `(False, response_text)` otherwise. |
 
-### Harvests
+Example upload:
+
+```python
+info = {"filename": "example.rdf", "type": "local", "dname": "theme"}
+with open("example.rdf", "rb") as rdf_file:
+    result = gn.create_thesaurus_dict(info, rdf_file.read())
+
+if result[0]:
+    print(result[1])
+else:
+    print("Thesaurus upload failed:", result[1])
+```
+
+Create a thesaurus entry using its metadata:
+
+```python
+thesaurus_info = {
+    "title": "",
+    "description": "",
+    "filename": "test",
+    "defaultNamespace": "https://registry.geonetwork-opensource.org/theme/test",
+    "dname": "theme",
+    "type": "local",
+    "multilingualTitles": {"fr": "test"},
+    "multilingualDescriptions": {"fr": "test"},
+}
+result = gn.create_thesaurus(thesaurus_info)
+print(result)
+```
+
+Add a French keyword to an existing local thesaurus. If `keyword_uri` is omitted, the method creates a unique URI under the namespace:
+
+```python
+result = gn.add_thesaurus_keyword(
+    thesaurus_ref="local.theme.test",
+    ref_type="theme",
+    namespace="https://registry.geonetwork-opensource.org/theme/test",
+    label="test123",
+    definition="test123",
+    language="fre",
+)
+print(result)
+```
+
+### [Harvests](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L369)
 
 | Method | Purpose | Result notes |
 | --- | --- | --- |
@@ -123,7 +170,7 @@ geOr_api.gn.purge_search_bucket("geoutilsbucket")
 | `delete_harvest(id)` | Remove a harvest configuration | Parsed JSON response |
 
 
-### Search selections and batch editing
+### [Search selections and batch editing](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L440)
 
 | Method | Purpose |
 | --- | --- |

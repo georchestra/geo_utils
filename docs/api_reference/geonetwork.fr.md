@@ -1,4 +1,4 @@
-## [GeoNetwork : `GN_API`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py)
+## [GeoNetwork : `GN_API`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L18)
 
 Créez directement le client pour configurer les options propres à GeoNetwork :
 
@@ -45,7 +45,7 @@ metadata = Meta_manipulation.add_thesaurus(
 
 gn.upload_metadata(metadata=metadata, uuidprocessing="OVERWRITE", publish=True)
 
-for thesaurus in gn.get_thesaurus_dict():
+for thesaurus in gn.list_thesaurus():
     print("Clé :", thesaurus["key"])
 
 gn.closesession()
@@ -91,7 +91,7 @@ geOr_api.gn.batch_edit_search_and_replace(
 geOr_api.gn.purge_search_bucket("geoutilsbucket")
 ```
 
-### Catalogue et métadonnées
+### [Catalogue et métadonnées](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L40)
 
 | Méthode | Description | Remarques sur le résultat |
 | --- | --- | --- |
@@ -102,16 +102,63 @@ geOr_api.gn.purge_search_bucket("geoutilsbucket")
 | `upload_metadata(metadata, groupid="100", uuidprocessing="GENERATEUUID", publish=False)` | Téléverse un objet fichier de métadonnées ; `uuidprocessing` accepte les valeurs GeoNetwork `NOTHING`, `OVERWRITE` et `GENERATEUUID` | JSON analysé en cas de succès ; `False` en cas d’erreur gérée |
 | `get_record_privileges(uuid)` | Récupère le groupe propriétaire et la visibilité publique | Dictionnaire en cas de succès ; sinon `None` |
 
-### Thésaurus
+### [Thésaurus](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L244)
 
 | Méthode | Description |
 | --- | --- |
-| `get_thesaurus_dict(thesaurus_key=None)` | Récupère les informations du thésaurus, éventuellement pour une clé donnée |
-| `searchin_thesaurus_dict(keyword="", thesaurus_key=False)` | Recherche des termes, éventuellement limitée à certaines clés de thésaurus |
-| `add_thesaurus_dict(filename)` | Téléverse un fichier de thésaurus ; l’implémentation est expérimentale et affiche les détails de la requête |
-| `delete_thesaurus_dict(name)` | Supprime un thésaurus par son nom ou sa clé |
+| `list_thesaurus(thesaurus_key=None)` | Liste les thésaurus ou renvoie celui correspondant à une clé ; renvoie `None` si la requête échoue ou si la clé est introuvable |
+| `get_thesaurus(thesaurus_key)` | Récupère le contenu RDF/XML d’un thésaurus ; renvoie `None` en cas d’échec de la requête |
+| `searchin_thesaurus_dict(keyword="", thesaurus_key=False)` | Recherche des termes dans tous les thésaurus ou limite la recherche à une ou plusieurs clés ; renvoie le JSON analysé pour HTTP 200, sinon `None` |
+| `add_thesaurus_keyword(thesaurus_ref, ref_type, namespace, label, definition, keyword_uri=None, language="fre")` | Ajoute un mot-clé localisé à un thésaurus existant ; génère un URI de concept avec UUID s’il est omis et renvoie `(True, response_text)` pour HTTP 200/201 |
+| `create_thesaurus_dict(info_thesaurus_json, rdf_content)` | Téléverse un thésaurus RDF. `info_thesaurus_json` doit contenir `filename`, `type` et `dname` ; renvoie `(True, response_text)` pour HTTP 200/201 ou `(False, response_text)` sinon. |
+| `create_thesaurus(thesaurus_info)` | Crée les métadonnées d’un thésaurus à partir d’un payload JSON via l’endpoint PUT de GeoNetwork ; renvoie `(True, response_text)` pour HTTP 200/201 ou `(False, response_text)` sinon. |
+| `delete_thesaurus(thesaurus_key)` | Supprime un thésaurus par sa clé ; renvoie `(True, response_text)` pour HTTP 200/204 ou `(False, response_text)` sinon. |
 
-### Moissonnage
+Exemple de téléversement :
+
+```python
+info = {"filename": "example.rdf", "type": "local", "dname": "theme"}
+with open("example.rdf", "rb") as rdf_file:
+    result = gn.create_thesaurus_dict(info, rdf_file.read())
+
+if result[0]:
+    print(result[1])
+else:
+    print("Échec du téléversement du thésaurus :", result[1])
+```
+
+Créer une entrée de thésaurus à partir de ses métadonnées :
+
+```python
+thesaurus_info = {
+    "title": "",
+    "description": "",
+    "filename": "test",
+    "defaultNamespace": "https://registry.geonetwork-opensource.org/theme/test",
+    "dname": "theme",
+    "type": "local",
+    "multilingualTitles": {"fr": "test"},
+    "multilingualDescriptions": {"fr": "test"},
+}
+result = gn.create_thesaurus(thesaurus_info)
+print(result)
+```
+
+Ajouter un mot-clé français à un thésaurus local existant. Si `keyword_uri` est omis, la méthode crée un URI unique sous l’espace de noms :
+
+```python
+result = gn.add_thesaurus_keyword(
+    thesaurus_ref="local.theme.test",
+    ref_type="theme",
+    namespace="https://registry.geonetwork-opensource.org/theme/test",
+    label="test123",
+    definition="test123",
+    language="fre",
+)
+print(result)
+```
+
+### [Moissonnage](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L369)
 
 | Méthode | Description | Remarques sur le résultat |
 | --- | --- | --- |
@@ -119,7 +166,7 @@ geOr_api.gn.purge_search_bucket("geoutilsbucket")
 | `make_harvest_local(uuid)` | Associe une récolte au nœud GeoNetwork local | `"Okay"` ou `False` ; le délai d’attente peut atteindre une heure |
 | `delete_harvest(id)` | Supprime une configuration de récolte | Réponse JSON analysée |
 
-### Sélections de recherche et modifications par lot
+### [Sélections de recherche et modifications par lot](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/meta_apis/gn_api.py#L440)
 
 | Méthode | Description |
 | --- | --- |

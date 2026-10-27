@@ -1,5 +1,4 @@
 import re
-import sys
 
 
 class Meta_manipulation:
@@ -358,23 +357,3 @@ class Meta_manipulation:
         return modified_feat
 
 
-if __name__ == "__main__":
-    file_to_update = sys.argv[1]
-    print("Will use the file " + file_to_update)
-
-    f = open(file_to_update)
-    all_file = f.read()
-    f.close()
-
-    all_file_updated = Meta_manipulation.add_thesaurus(
-        metadata=all_file,
-        title="DonnéeType",
-        server="https://georchestra-127-0-1-1.traefik.me",
-        thesaurus_value="Test",
-        local_thesaurus_name="type_test",
-    )
-    # print(modified_meta)
-
-    test = open(file_to_update + ".new", "w")
-    test.write(all_file_updated)
-    test.close()

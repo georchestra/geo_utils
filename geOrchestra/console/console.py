@@ -175,34 +175,3 @@ class Console_api:
 
     # def delroles(self):
     # def updateroles(self):
-
-if __name__ == "__main__":
-    # Set up your username and password:
-    username = 'testadmin'
-    password = 'testadmin'
-
-    # Set up your server and the authentication URL:
-    server = "https://georchestra-127-0-1-1.traefik.me"
-
-    console_API = Console_api(server, username, password)
-    # print(console_API.getusers())
-    # print(console_API.getroles())
-    # print(console_API.getorgs())
-    usertestadmin = json.loads(console_API.getusers(uid="testadmin"))
-    # print(usertestadmin["description"])
-    user_org = json.loads(console_API.getorgs(uid=usertestadmin["org"]))
-    # print(user_org)
-    usertestadmin["orgObj"] = user_org
-
-    usertestadmin["description"] = "This is a test of changing the description of the user testadmin"
-
-    # open("testadmin2.json", "w").write(json.dumps(usertestadmin))
-    print(usertestadmin["uid"])
-    print(console_API.updateuserdetails(uid=usertestadmin["uid"], json=json.dumps(usertestadmin)))
-
-    print(console_API.createnewuser(org="PSC", sn="testapi", givenname="test", mail="testsss@georchestra.org",
-                                    description="This user was created with the api"))
-    print(console_API.deluser(id="testapi"))
-
-    print(console_API.createneworgs(name="TESTAPI", shortName="testapi", orgType="Other"))
-    print(console_API.delorgs(id="testapi"))

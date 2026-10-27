@@ -1,6 +1,6 @@
 
 
-## [Console: `Console_api`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/console/console.py)
+## [Console: `Console_api`](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/console/console.py#L4)
 
 The top-level client's `console` attribute is an instance of `Console_api`. It sends requests to `/console/private/...` using HTTP Basic authentication.
 
@@ -27,7 +27,7 @@ print(console.createneworgs(name="TESTAPI", shortName="testapi", orgType="Other"
 print(console.delorgs(id="testapi"))
 ```
 
-### Users
+### [Users](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/console/console.py#L38)
 
 | Method | Purpose | Result notes |
 | --- | --- | --- |
@@ -36,7 +36,7 @@ print(console.delorgs(id="testapi"))
 | `updateuserdetails(uid, json)` | Update a user; `json` is a JSON-encoded request body | Response text on HTTP 200; otherwise `None`. |
 | `deluser(id)` | Delete a user | Response text on HTTP 200; otherwise an error string. |
 
-### Organizations
+### [Organizations](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/console/console.py#L102)
 
 | Method | Purpose | Result notes |
 | --- | --- | --- |
@@ -44,7 +44,7 @@ print(console.delorgs(id="testapi"))
 | `createneworgs(name, shortName, orgType, address="", description="", note="", mail="", url="", b64logo="")` | Create an organization | `orgType` should be a Console-supported type such as `Association`, `Company`, `NGO`, `Individual`, or `Other`. Returns response text on HTTP 200; otherwise an error string. |
 | `delorgs(id)` | Delete an organization | Response text on HTTP 200; otherwise an error string. |
 
-### Roles
+### [Roles](https://github.com/georchestra/geo-utils/blob/main/geOrchestra/console/console.py#L165)
 
 | Method | Purpose | Result notes |
 | --- | --- | --- |

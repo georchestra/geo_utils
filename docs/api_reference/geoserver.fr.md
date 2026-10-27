@@ -1,4 +1,4 @@
-## GeoServer
+## [GeoServer](https://github.com/camptocamp/python-geoservercloud)
 
 L’attribut `geoserver` du client principal est une instance de `GeoServerCloud`, fournie par la [bibliothèque Python GeoServer Cloud](https://github.com/camptocamp/python-geoservercloud). Le wrapper la construit avec l’endpoint `/geoserver/` de l’URL de l’instance et les identifiants fournis.
 

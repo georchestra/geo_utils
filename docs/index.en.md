@@ -34,6 +34,8 @@ python3 -m pip install "git+https://github.com/georchestra/geo-utils.git"
 ```
 ## Samples
 
+See the [samples guide](samples.md) for runnable scripts in the [samples directory](https://github.com/georchestra/geo-utils/tree/main/samples).
+
 Start to play :
 ```python
 import json
