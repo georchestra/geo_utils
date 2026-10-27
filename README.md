@@ -8,11 +8,15 @@ If you have any ideas to develop/which you could create a new issue here : https
 
 There is also a python module in order to script actions in geOrchestra plateform
 
-To install it : 
+To install the published package:
 ```
-pip install git+https://github.com/georchestra/geo-utils/ 
+python -m pip install geOrchestra
 ```
-(you might need --break-system-packages option)
+
+To install directly from the repository:
+```
+python -m pip install git+https://github.com/georchestra/geo-utils/
+```
 
 to try it:
 ```
@@ -50,3 +54,9 @@ Then open http://127.0.0.1:8000/. The English documentation sources are in [`doc
 https://github.com/jdev-org/georchestra-ldap-py
 
 https://github.com/pi-geosolutions/vrt2rdf
+
+## Publishing
+
+Publishing runs when a version tag starting with `v` is pushed to GitHub. The tag version must match the version in `pyproject.toml`.
+
+Configure PyPI Trusted Publishing for this GitHub repository and the `.github/workflows/publish-pypi.yml` workflow. This uses GitHub's OIDC identity and does not require a PyPI token in GitHub secrets.
