@@ -282,7 +282,7 @@ class GN_API:
             verify=self.verifytls,
         )
         if response.status_code == 200:
-            return response.text
+            return response.content.decode("utf-8-sig")
         return None
 
     def searchin_thesaurus_dict(self, keyword: str = "", thesaurus_key=False, search_lang="fre"):
