@@ -47,6 +47,18 @@ meta.save_into_file("./sample_meta3.xml")
 
 `apply_xslt_tranformation`, `search_and_replace` et `append_value_xpath` sont des méthodes provisoires qui ne font actuellement rien.
 
+#### Namespaces
+
+Les déclarations manquantes sont ajoutées à partir de `Metadata.NAMESPACES` :
+
+```python
+meta = Metadata("<gex:temporalElement><gml:TimeInstant/></gex:temporalElement>")
+print(meta.to_string())
+```
+
+Seuls les préfixes utilisés sont ajoutés ; les déclarations existantes sont conservées. Le XML doit avoir un seul élément racine.
+Pour d’autres préfixes ou versions, ajoutez les déclarations ou modifiez le dictionnaire.
+
 ### [`ThesaurusKeyword`](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/metadata.py#L5)
 
 | Membre | Description |
