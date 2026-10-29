@@ -57,7 +57,8 @@ meta = Metadata("<gex:temporalElement><gml:TimeInstant/></gex:temporalElement>")
 print(meta.to_string())
 ```
 
-Only used prefixes are added; existing declarations are kept. Input must have one root element.
+Only used prefixes are added; existing declarations are kept.
+Multiple top-level elements get an internal `<root>`, omitted from string and file exports.
 For other prefixes or namespace versions, add declarations or update the mapping.
 
 ### [`ThesaurusKeyword`](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/metadata.py#L5)

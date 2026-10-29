@@ -122,6 +122,7 @@ class Metadata:
     def __init__(self, xml_string: str = ""):
         self.meta = None
         self.ns = {}
+        self._has_wrapper = False
         try:
             self.meta = ET.fromstring(xml_string.encode("utf-8"))
             # reading ns from xml and create ns = { "gco": "http://standards.iso.org/iso/19115/-3/gco/1.0",...etc}
@@ -129,26 +130,16 @@ class Metadata:
         except ET.XMLSyntaxError:
             # Resolve missing namespaces here.
             parser = ET.XMLParser(recover=True)
-            document = ET.fromstring(xml_string.encode("utf-8"), parser=parser)
-            if any(
-                error.type == ET.ErrorTypes.ERR_DOCUMENT_END
+            document = ET.fromstring(
+                f"<root>{xml_string}</root>".encode("utf-8"), parser=parser
+            )
+            if document is None or not len(document) or any(
+                error.type != ET.ErrorTypes.NS_ERR_UNDEFINED_NAMESPACE
                 for error in parser.error_log
             ):
-                print(
-                    "Invalid XML: extra content after the root element. "
-                    "Metadata expects exactly one top-level element."
-                )
                 return
-
-            if any(
-                error.type != ET.ErrorTypes.NS_ERR_UNDEFINED_NAMESPACE
-                for error in parser.error_log
-            ):
-                return None
-
-            if document is None or any(
-                error.type != ET.ErrorTypes.NS_ERR_UNDEFINED_NAMESPACE
-                for error in parser.error_log
+            if (document.text or "").strip() or any(
+                (element.tail or "").strip() for element in document
             ):
                 return
             namespaces = dict(document.nsmap)
@@ -184,7 +175,11 @@ class Metadata:
             root.text = document.text
             root.tail = document.tail
             root.extend(document)
-            self.meta = root
+            if len(root) == 1:
+                self.meta = ET.fromstring(ET.tostring(root[0], with_tail=False))
+            else:
+                self.meta = root
+                self._has_wrapper = True
             self.ns = self._get_dynamic_namespaces()
         except Exception as e:
             self.meta = None
@@ -206,6 +201,11 @@ class Metadata:
             document = ET.fromstring(
                 ET.tostring(self.meta), parser=ET.XMLParser(remove_blank_text=True)
             )
+            if self._has_wrapper:
+                return "".join(
+                    ET.tostring(element, pretty_print=True, encoding="unicode", with_tail=False)
+                    for element in document
+                )
             return ET.tostring(document, pretty_print=True, encoding="unicode")
         else:
             return ""

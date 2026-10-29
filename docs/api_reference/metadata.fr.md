@@ -56,7 +56,8 @@ meta = Metadata("<gex:temporalElement><gml:TimeInstant/></gex:temporalElement>")
 print(meta.to_string())
 ```
 
-Seuls les préfixes utilisés sont ajoutés ; les déclarations existantes sont conservées. Le XML doit avoir un seul élément racine.
+Seuls les préfixes utilisés sont ajoutés ; les déclarations existantes sont conservées.
+Plusieurs éléments racines sont regroupés dans un `<root>` interne, retiré des exports texte et fichier.
 Pour d’autres préfixes ou versions, ajoutez les déclarations ou modifiez le dictionnaire.
 
 ### [`ThesaurusKeyword`](https://github.com/georchestra/geo_utils/blob/main/geOrchestra/meta_apis/metadata.py#L5)
